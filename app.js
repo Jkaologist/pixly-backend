@@ -4,6 +4,8 @@ const { NotFoundError } = require("./expressError");
 
 const app = express();
 
+app.use("/pics", picsRoutes)
+
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
   return next(new NotFoundError());
