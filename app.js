@@ -1,12 +1,14 @@
 const express = require("express");
+const cors = require("cors");
+
 const picsRoutes = require("./routes/pics");
 const { NotFoundError } = require("./expressError");
-
 const app = express();
 
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use("/pics", picsRoutes)
-
-console.log("this is the app!")
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
