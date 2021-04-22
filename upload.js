@@ -1,14 +1,14 @@
 const fs = require('fs');
 const AWS = require('aws-sdk');
 
-const uploadFile = (fileName) => {
+async function uploadFile(fileName) {
   // Read content from the file
-  const fileContent = fs.readFileSync(fileName);
+  const fileContent = await fs.readFileSync(fileName);
 
   // Setting up S3 upload parameters
   const params = {
-      Bucket: pixlypics,
-      Key: "fileName", // File name you want to save as in S3
+      Bucket: "pixlypics",
+      Key: "someName", // File name you want to save as in S3
       Body: fileContent
   };
 
