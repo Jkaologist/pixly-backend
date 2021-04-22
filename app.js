@@ -1,14 +1,41 @@
 const express = require("express");
 const cors = require("cors");
+const aws = require('aws-sdk'); // ^2.2.41
+const multer = require('multer'); // "multer": "^1.1.0"
+const multerS3 = require('multer-s3'); //"^1.4.1"
 
-const picsRoutes = require("./routes/pics");
 const { NotFoundError } = require("./expressError");
+const {secretAccessKey, accessKeyId} = require("./config")
 const app = express();
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use("/pics", picsRoutes)
+
+aws.config.update({
+    secretAccessKey,
+    accessKeyId,
+    region: 'us-west-1'
+});
+
+const s3 = new aws.S3();
+
+var upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'pixlypics',
+        key: function (req, file, cb) {
+            console.log(file);
+            cb(null, file.originalname); //use Date.now() for unique file keys
+        }
+    })
+});
+
+//used by upload form
+app.post('/upload', upload.single("uploadPic"), function (req, res, next) {
+  res.send("Uploaded!");
+});
+
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {

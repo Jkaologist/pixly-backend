@@ -1,24 +1,29 @@
-const fs = require('fs');
-const AWS = require('aws-sdk');
+var express = require('express'), // "^4.13.4"
+    aws = require('aws-sdk'), // ^2.2.41
+    bodyParser = require('body-parser'),
+    multer = require('multer'), // "multer": "^1.1.0"
+    multerS3 = require('multer-s3'); //"^1.4.1"
 
-async function uploadFile(fileName) {
-  // Read content from the file
-  const fileContent = await fs.readFileSync(fileName);
+const {secretAccessKey, accessKeyId} = require("./config")
 
-  // Setting up S3 upload parameters
-  const params = {
-      Bucket: "pixlypics",
-      Key: "someName", // File name you want to save as in S3
-      Body: fileContent
-  };
+aws.config.update({
+    secretAccessKey,
+    accessKeyId,
+    region: 'us-west-1'
+});
 
-  // Uploading files to the bucket
-  s3.upload(params, function(err, data) {
-      if (err) {
-          throw err;
-      }
-      console.log(`File uploaded successfully. ${data.Location}`);
-  });
-};
+var app = express(),
+    s3 = new aws.S3();
 
-module.exports = {uploadFile};
+app.use(bodyParser.json());
+
+var upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'pixlypics',
+        key: function (req, file, cb) {
+            console.log(file);
+            cb(null, file.originalname); //use Date.now() for unique file keys
+        }
+    })
+});
