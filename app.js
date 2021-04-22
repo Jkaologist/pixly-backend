@@ -3,7 +3,7 @@ const cors = require("cors");
 const aws = require('aws-sdk'); // ^2.2.41
 const multer = require('multer'); // "multer": "^1.1.0"
 const multerS3 = require('multer-s3'); //"^1.4.1"
-
+const { v4: uuidv4 } = require('uuid');
 const { NotFoundError } = require("./expressError");
 const {secretAccessKey, accessKeyId} = require("./config")
 const app = express();
@@ -26,16 +26,15 @@ var upload = multer({
         bucket: 'pixlypics',
         key: function (req, file, cb) {
             console.log(file);
-            cb(null, file.originalname); //use Date.now() for unique file keys
+            cb(null, `${uuidv4()}.jpeg`);
         }
     })
 });
 
 //used by upload form
-app.post('/upload', upload.single("uploadPic"), function (req, res, next) {
+app.post('/upload', upload.single("file"), function (req, res, next) {
   res.send("Uploaded!");
 });
-
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
