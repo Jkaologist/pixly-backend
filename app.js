@@ -26,6 +26,7 @@ var upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: 'pixlypics',
+        acl: 'public-read',
         key: function (req, file, cb) {
             console.log(file);
             cb(null, `${uuidv4()}.jpeg`);
@@ -33,22 +34,19 @@ var upload = multer({
     })
 });
 
-function getPic(Id) {
-  var params = { Bucket: 'pixlypics', Key: Id };
-  const res = s3.getObject(params, function(err, data) {
-      res.writeHead(200, {'Content-Type': 'image/jpeg'});
-      res.write(data.Body, 'binary');
-      res.end(null, 'binary');
-  });
-  return res;
-}
+// async function getPic(Id) {
+//   var params = { Bucket: 'pixlypics', Key: "7d8d2256-05c7-4096-b72f-ec6c7effa15c.jpeg" };
+//   const res = await s3.getObject(params, function(err, data) {
+//     if (err)
+//     return err;
+//   });
+//   console.log("inside get pic!", res)
+//   return res;
+// }
 
 app.get("/", async function (req, res, next) {
   const result = await getAllFromDb()
-  for (let obj of result) {
-    console.log(await getPic(obj.id));
-  }
-  next();
+  return result;
 })
 
 //req.file.location - gives us the url of the uploaded image

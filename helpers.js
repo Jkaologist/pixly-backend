@@ -3,7 +3,7 @@ const db = require("./db")
 async function addToDb(key, link)  {
 
   const result = await db.query(
-    `INSERT INTO pics 
+    `INSERT INTO pics
     (id, link)
     VALUES ($1, $2)
     RETURNING id, link`, [key, link])
@@ -16,7 +16,7 @@ async function addToDb(key, link)  {
 async function getAllFromDb() {
 
   const result = await db.query(
-    `SELECT id
+    `SELECT link
     FROM pics`)
   
   const info = result.rows;
