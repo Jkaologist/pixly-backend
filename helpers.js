@@ -16,12 +16,10 @@ async function addToDb(key, link)  {
 async function getAllFromDb() {
 
   const result = await db.query(
-    `SELECT *
+    `SELECT id
     FROM pics`)
   
   const info = result.rows;
-  
-  console.log("INFOOOOOOOO: ", info);
 
   return info;
 }

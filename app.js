@@ -33,11 +33,24 @@ var upload = multer({
     })
 });
 
+function getPic(Id) {
+  var params = { Bucket: 'pixlypics', Key: Id };
+  const res = s3.getObject(params, function(err, data) {
+      res.writeHead(200, {'Content-Type': 'image/jpeg'});
+      res.write(data.Body, 'binary');
+      res.end(null, 'binary');
+  });
+  return res;
+}
+
 app.get("/", async function (req, res, next) {
-  await getAllFromDb();
-  // Todo: Use ID to retrieve the bucket images
+  const result = await getAllFromDb()
+  for (let obj of result) {
+    console.log(await getPic(obj.id));
+  }
   next();
 })
+
 //req.file.location - gives us the url of the uploaded image
 //used by upload form
 app.post('/upload', upload.single("file"), async function (req, res, next) {
