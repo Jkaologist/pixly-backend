@@ -1,21 +1,29 @@
 const db = require("./db")
 
 async function addToDb(key, link)  {
-  console.log("key!!", key)
-  console.log("info!!", link)
-  db.query('SELECT * FROM pg_catalog.pg_tables', function(err, result) {
-    console.log(result);
-  });
+
   const result = await db.query(
-    `INSERT INTO pixly 
-    (key, link)
+    `INSERT INTO pics 
+    (id, link)
     VALUES ($1, $2)
-    RETURNING key, link`, [key, link])
+    RETURNING id, link`, [key, link])
   
   const info = result.rows[0];
 
+  return info;
+}
+
+async function getAllFromDb() {
+
+  const result = await db.query(
+    `SELECT *
+    FROM pics`)
+  
+  const info = result.rows;
+  
+  console.log("INFOOOOOOOO: ", info);
 
   return info;
-  }
+}
 
-module.exports = {addToDb}
+module.exports = {addToDb, getAllFromDb}

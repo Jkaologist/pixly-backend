@@ -5,8 +5,8 @@ const multer = require('multer'); // "multer": "^1.1.0"
 const multerS3 = require('multer-s3'); //"^1.4.1"
 const { v4: uuidv4 } = require('uuid');
 const { NotFoundError } = require("./expressError");
-const {secretAccessKey, accessKeyId} = require("./config")
-const {addToDb} = require("./helpers")
+const { secretAccessKey, accessKeyId } = require("./config")
+const { addToDb, getAllFromDb } = require("./helpers")
 const app = express();
 const ExifImage = require('exif').ExifImage;
 
@@ -33,7 +33,11 @@ var upload = multer({
     })
 });
 
-
+app.get("/", async function (req, res, next) {
+  await getAllFromDb();
+  // Todo: Use ID to retrieve the bucket images
+  next();
+})
 //req.file.location - gives us the url of the uploaded image
 //used by upload form
 app.post('/upload', upload.single("file"), async function (req, res, next) {
