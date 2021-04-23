@@ -6,7 +6,9 @@ const multerS3 = require('multer-s3'); //"^1.4.1"
 const { v4: uuidv4 } = require('uuid');
 const { NotFoundError } = require("./expressError");
 const {secretAccessKey, accessKeyId} = require("./config")
+const {addToDb} = require("./helpers")
 const app = express();
+const ExifImage = require('exif').ExifImage;
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -31,8 +33,11 @@ var upload = multer({
     })
 });
 
+
+//req.file.location - gives us the url of the uploaded image
 //used by upload form
-app.post('/upload', upload.single("file"), function (req, res, next) {
+app.post('/upload', upload.single("file"), async function (req, res, next) {
+  await addToDb(req.file.key, req.file.location)
   res.send("Uploaded!");
 });
 
