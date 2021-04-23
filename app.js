@@ -31,6 +31,7 @@ var upload = multer({
             console.log(file);
             cb(null, `${uuidv4()}.jpeg`);
         }
+        
     })
 });
 
@@ -46,7 +47,7 @@ var upload = multer({
 
 app.get("/", async function (req, res, next) {
   const result = await getAllFromDb()
-  return result;
+  return res.json(result)
 })
 
 //req.file.location - gives us the url of the uploaded image
